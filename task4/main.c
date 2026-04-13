@@ -19,8 +19,8 @@ char has_elbrus_opt(char** elbrus_opts, size_t elbrus_opts_size, char* opt) {
 }
 
 int main(int argc, char** argv) {
-    char* elbrus_values[MAX_ELBRUS_OPTS];
-    size_t elbrus_value_size = 0;
+    char result = 0;
+    opterr = 0; // отключение вывода getopt в stderr
 
     const char* shortopts = "mcst";
 
@@ -28,12 +28,11 @@ int main(int argc, char** argv) {
         { "elbrus", required_argument, NULL, 'e' }
     };
 
-    char result = 0;
-
-    opterr = 0;
-
     char short_options[4];
     size_t short_size = 0;
+
+    char* elbrus_values[MAX_ELBRUS_OPTS];
+    size_t elbrus_value_size = 0;
 
     while ((result = getopt_long(argc, argv, shortopts, longoptions, NULL)) != -1) {
         switch (result) {
@@ -60,23 +59,17 @@ int main(int argc, char** argv) {
             case '?':
                 fprintf(stderr, "Incorrect option: '%c'\n", optopt);
                 return 1;
-            default:
-                printf("%c\n", result);
-                break;
         }
     }
 
     printf("Short options:");
-
     if (short_size > 0) {
-        
         for (int i = 0; i < short_size; i++) {
             printf(" '%c'", short_options[i]);
         }
     }
 
     printf("\nLong options:");
-
     if (elbrus_value_size > 0) {
         for (int i = 0; i < elbrus_value_size; i++) {
             printf(" 'elbrus=%s'", elbrus_values[i]);
@@ -84,14 +77,11 @@ int main(int argc, char** argv) {
     }
 
     printf("\nNon options:");
-
     if (optind < argc) {
-
         for (int i = optind; i < argc; i++) {
             printf(" '%s'", argv[i]);
         }
     }
-
     putc('\n', stdout);
     
     return 0;
