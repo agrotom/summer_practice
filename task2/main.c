@@ -23,7 +23,7 @@ void* read_thread(void* data) {
             printf(">%s", msg.msg);
         }
         else {
-            // Так как FIFO файл один и не разделен на write и read,
+            // Так как FIFO файл один и не разделен на отдельные FIFO для записи и чтения,
             // то процесс может забрать из очереди своё же сообщение.
             // Поэтому при получении своего сообщения оно переотправляется.
             fwrite(&msg, sizeof(msg), 1, fifoFile);
@@ -71,6 +71,11 @@ int main(int argc, char** argv) {
         }
 
         fflush(fifoFile);
+    }
+
+    if (fclose(fifoFile) == EOF) {
+        perror("Can't close the FIFO");
+        return 1;
     }
 
     return 0;
