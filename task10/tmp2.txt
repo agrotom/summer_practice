@@ -1,0 +1,162 @@
+#include <iostream>
+#include <stack>
+#include <string>
+#include <vector>
+
+#include "./include/lib/tree.hpp"
+
+#define WORD_COUNT 3
+
+std::string words[WORD_COUNT] = {
+    "AND",
+    "OR",
+    "NOT"
+};
+
+bool valid_word(const std::string& word) {
+    for (int i = 0; i < WORD_COUNT; i++) {
+        if (words[i].compare(word) == 0) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::string next_lex(const std::string& str) {
+    static int i = 0;
+    std::string word = "";
+    
+    for (; i < str.size(); i++) {
+        char ch = str.at(i);
+
+        if (ch == '\n') {
+            continue;
+        }
+        
+        if (ch == '(' || ch == ')') {
+            i++;
+            return word + ch;
+        }
+        else if (ch != ' ') {
+            word += ch;
+            
+            if (i != str.size() - 1 && (str.at(i + 1) != '(' && str.at(i + 1) != ')')) {
+                continue;
+            }
+        }
+        else if (ch == ' ' && word == "") {
+            continue;
+        }
+
+        i++;
+
+        return word;
+    }
+
+    return "";
+}
+
+bool is_operand(const std::string& str) {
+    for (int i = 'A'; i <= 'Z'; i++) {
+        if (str == std::string(1, i)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+task::ITree* parse_tree(std::vector<task::ITree*>& trees, std::vector<task::operator_tree*>& operator_trees) {
+    while (operator_trees.size() > 0) {
+        task::operator_tree* cur_tree = operator_trees.back();
+        operator_trees.pop_back();
+
+        if (cur_tree->is_unary) {
+            task::ITree* operand = trees.back();
+            trees.pop_back();
+
+            if (operand.is_bracket()) {
+                operand = parse_tree(trees, operand_trees);
+            }
+
+            cur_tree->left = operand;
+        }
+        else {
+            task::ITree* operand_left = trees.back();
+            trees.pop_back();
+            
+            task::ITree* operand_right = trees.back();
+            trees.pop_back();
+
+            cur_tree->left = operand_left;
+            cur_tree->right = operand_right;
+        }
+
+        trees.push_back(cur_tree);
+    }
+}
+
+task::ITree* break_to_lex(const std::string& str) {
+    std::vector<std::string> lexems = *new std::vector<std::string>();
+
+    std::vector<task::ITree*> trees = *new std::vector<task::ITree*>();
+    std::vector<task::operator_tree*> operator_trees = *new std::vector<task::operator_tree*>();
+
+    std::string lex = "";
+    while ((lex = next_lex(str)) != "") {
+        lexems.push_back(lex);
+    }
+
+    for (int i = 0; i < lexems.size(); i++) {
+        std::cout << lexems.at(i) << ", ";
+    }
+
+    std::cout << std::endl;
+
+    do {
+        lex = lexems.back();
+        lexems.pop_back();
+
+        if (is_operand(lex)) {
+            trees.push_back(new task::operand_tree(lex));
+        }
+        else if (valid_word(lex)) {
+            if (lex == "NOT") {
+                operator_trees.push_back(new task::operator_tree(lex, true));
+            }
+            else {
+                operator_trees.push_back(new task::operator_tree(lex, false));
+            }
+        }
+        else if (lex == "(" || lex == ")") {
+            trees.push_back(new task::operand_tree(lex));
+        }
+    } while (lexems.size() > 0);
+
+    ITree* result_tree = parse_tree(trees, operator_trees);
+
+    for (int i = 0; i < trees.size(); i++) {
+        trees.at(i)->print();
+    }
+
+    return result_tree;
+}
+
+int main(int argc, char** argv) {
+    std::string input_string = "";
+
+    std::getline(std::cin, input_string);
+
+    task::ITree* tree = break_to_lex_tree(input_string);
+
+    std::map<std::string, int> values = *new std::map<std::string, int>();
+
+    values["A"] = 1;
+    values["B"] = 1;
+    values["C"] = 0;
+
+    std::cout << tree->calculate(values) << std::endl;
+    
+    return 0;
+}

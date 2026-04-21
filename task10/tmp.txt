@@ -1,0 +1,68 @@
+bool brackets_syntax(const std::string& str) {
+    std::stack<char> stack = *new std::stack<char>();
+
+    for (int i = 0; i < str.size(); i++) {
+        char ch = str.at(i);
+
+        if (ch == '(') {
+            stack.push('(');
+        }
+        else if (ch == ')') {
+            if (stack.size() == 0) {
+                //std::cerr << "No left bracket for the right bracket at: " << i << std::endl;
+                return false;
+            }
+
+            char l_bracket = stack.top();
+            stack.pop();
+
+            if (l_bracket != '(') {
+                //std::cerr << "No left bracket for the right bracket at: " << i << std::endl;
+                return false;
+            }
+        }
+    }
+
+    if (stack.size() > 0) {
+        //std::cerr << "No right bracket for the left bracket" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+bool valid_word(const std::string& word) {
+    for (int i = 0; i < WORD_COUNT; i++) {
+        if (words[i].compare(word) == 0) {
+            return true;
+        }
+    }
+
+    std::cerr << "Unknown word: " << word << std::endl;
+
+    return false;
+}
+
+bool lex_syntax(const std::string& str) {
+    std::string word = "";
+
+    for (int i = 0; i < str.size(); i++) {
+        char ch = str.at(i);
+        
+        if (ch != ' ') {
+            word += ch;
+            
+            if (i != str.size() - 1) {
+                continue;
+            }
+        }
+
+        if (!valid_word(word)) {
+            return false;
+        }
+
+        word = "";
+    }
+
+    return true;
+}
