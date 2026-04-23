@@ -26,6 +26,11 @@ int main(int argc, char** argv) {
         }
     }
 
+    if (size == 1) {
+        printf("%d", array[0]);
+        return 0;
+    }
+
     int maxI = 0, maxJ = 1;
     int i = 0, j = 1;
     while (j < size) {

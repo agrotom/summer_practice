@@ -7,7 +7,7 @@
 
 #define MATRIX_SIZE 3
 
-#define SLEEP_INTERVAL 1
+#define SLEEP_INTERVAL 0.5 // очень быстро!
 
 #define P_SIGNAL 1
 #define P_SIGACTION 2
