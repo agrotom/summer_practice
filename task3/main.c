@@ -5,6 +5,21 @@
 #define MAX_LINES 64
 #define MAX_LINE_LENGTH 64
 
+void valid_line(char* str) {
+    int i = 0;
+
+    while (str != NULL && str[0] != '\0') {
+        if (str[0] == '\n') {
+            return;
+        }
+
+        i++;
+        str++;
+    }
+
+    str[i - 1] = '\n';
+}
+
 int lex_sort(const char* str1, const char* str2) {
     return strcasecmp(str1, str2);
 }
@@ -19,7 +34,7 @@ void bubble_sort(char lines[MAX_LINES][MAX_LINE_LENGTH], int length, int (*sort_
             for (int j = 0; j < length - 1 - i; j++) {
                 char temp[MAX_LINE_LENGTH];
 
-                if (sort_func(lines[j], lines[j + 1]) < 0) {
+                if (sort_func(lines[j], lines[j + 1]) <= 0) {
                     strcpy(temp, lines[j]);
                     strcpy(lines[j], lines[j + 1]);
                     strcpy(lines[j + 1], temp);
@@ -108,6 +123,10 @@ int main(int argc, char** argv) {
         }
 
         current_line++;
+    }
+    
+    if (current_line != 0) {
+        valid_line(lines[current_line - 1]);
     }
 
     bubble_sort(lines, current_line, sort_func, reverse);
