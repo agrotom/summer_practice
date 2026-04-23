@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
         }
     }
     else {
-        if (file_writer("child_copy", file) == -1) {
+        if (file_writer("parent_copy", file) == -1) {
             return 1;
         }
     }
