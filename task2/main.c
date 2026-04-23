@@ -27,7 +27,6 @@ void* read_thread(void* data) {
             // то процесс может забрать из очереди своё же сообщение.
             // Поэтому при получении своего сообщения оно переотправляется.
             fwrite(&msg, sizeof(msg), 1, fifoFile);
-            fflush(fifoFile);
         }
     }
 
