@@ -1,6 +1,9 @@
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
+
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <errno.h>
 #include <pwd.h>
 #include <grp.h>
@@ -153,9 +156,9 @@ int main(int argc, char** argv) {
 
     long int st_dev = S_ISCHR(st_mode) || S_ISBLK(st_mode) ? file_stat.st_rdev : file_stat.st_dev;
 
-    printf("File: %s\nSize: %ld\tBlocks: %ld\tIO Block: %ld\t%s\nDevice: %ld\tInode: %ld\tLinks: %ld\nAccess: (%04o/%s)\tUid: (%d/%s)\tGid: (%d/%s)\n",
+    printf("File: %s\nSize: %ld\tBlocks: %ld\tIO Block: %ld\t%s\nDevice: %d,%d\tInode: %ld\tLinks: %ld\nAccess: (%04o/%s)\tUid: (\t%d/\t%s)\tGid: (\t%d/\t%s)\n",
         file_name, file_stat.st_size, file_stat.st_blocks,
-        file_stat.st_blksize, get_file_type(st_mode), file_stat.st_dev,
+        file_stat.st_blksize, get_file_type(st_mode), major(file_stat.st_dev), minor(file_stat.st_dev),
         file_stat.st_ino, file_stat.st_nlink, st_mode & 0777, access_code,
         file_stat.st_uid, get_user_name(file_stat.st_uid), file_stat.st_gid, get_group_name(file_stat.st_gid));
 
