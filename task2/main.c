@@ -20,7 +20,7 @@ void* read_thread(void* data) {
         fread(&msg, sizeof(msg), 1, fifoFile);
         
         if (msg.pid != getpid()) {
-            printf(">%s", msg.msg);
+            printf("%s", msg.msg);
         }
         else {
             // Так как FIFO файл один и не разделен на отдельные FIFO для записи и чтения,

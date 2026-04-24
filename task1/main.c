@@ -152,9 +152,8 @@ int main(int argc, char** argv) {
 
     quicksort(array, 0, size - 1);
 
-    printf("Sorted: ");
     for (int i = 0; i < size; i++) {
-        printf(" %d", array[i]);
+        printf("%d ", array[i]);
     }
 
     printf("\n");

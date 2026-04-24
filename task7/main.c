@@ -2,7 +2,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 4096
 
 int file_writer(char* name, FILE* r_file) {
     FILE* w_file = NULL;

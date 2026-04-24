@@ -31,17 +31,25 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    int maxI = 0, maxJ = 1;
+    int maxSum = array[0];
+    int sum = array[0];
+    int maxI = 0, maxJ = 0;
     int i = 0, j = 1;
     while (j < size) {
-        if (maxJ - maxI < j - i) {
-            maxJ = j;
-            maxI = i;
+        if (array[j - 1] > array[j]) {
+            i = j;
+            sum = array[i];
+        }
+        else {
+            sum += array[j];
         }
 
-        if (array[j - 1] > array[j]) {
-            maxJ--;
-            i = j;
+        int max_len = maxJ - maxI + 1;
+        int cur_len = j + 1 - i;
+        if (max_len < cur_len || (max_len == cur_len && maxSum < sum)) {
+            maxJ = j;
+            maxI = i;
+            maxSum = sum;
         }
 
         j++;

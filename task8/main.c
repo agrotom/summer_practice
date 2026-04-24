@@ -7,7 +7,7 @@
 
 #define MATRIX_SIZE 3
 
-#define SLEEP_INTERVAL 0.5 // очень быстро!
+#define SLEEP_INTERVAL 500
 
 #define P_SIGNAL 1
 #define P_SIGACTION 2
@@ -15,6 +15,8 @@
 static int i = 0;
 static int j = 0;
 static int k = 0;
+
+struct timespec sleep_interval;
 
 void sigintHandler(int arg) {
     printf("\n%d %d\n%d %d\n%d %d\n", i, k, k, i, i, j);
@@ -60,7 +62,7 @@ void mult_matrices(int matrix1[MATRIX_SIZE][MATRIX_SIZE], int matrix2[MATRIX_SIZ
         for (j = 0; j < MATRIX_SIZE; j++) {
             for(k = 0; k < MATRIX_SIZE; k++) {
                 res_matrix[i][j] += matrix1[i][k] * matrix2[k][j];
-                sleep(SLEEP_INTERVAL);
+                nanosleep(&sleep_interval, NULL);
             }
         }
     }
@@ -71,6 +73,9 @@ int main(int argc, char** argv) {
         fprintf(stderr, "Task #8 requires at least 1 argument (--signal or --sigaction)!\n");
         return 1;
     }
+
+    sleep_interval.tv_sec = 0;
+    sleep_interval.tv_nsec = SLEEP_INTERVAL * 1000000L;
 
     srand(time(NULL));
 
