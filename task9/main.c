@@ -27,7 +27,7 @@ int main(int argc, char** argv) {
     }
 
     if (size == 1) {
-        printf("%d", array[0]);
+        printf("%d\n", array[0]);
         return 0;
     }
 
