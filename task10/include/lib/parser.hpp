@@ -1,6 +1,11 @@
 #include "./tree.hpp"
 #include <stdexcept>
 #include <map>
+#include <deque>
+
+#ifndef TASK10_PARSER_HPP
+
+#define TASK10_PARSER_HPP
 
 namespace task {
 
@@ -10,120 +15,22 @@ namespace task {
 
         std::map<std::string, int> values = *new std::map<std::string, int>();
 
-        parser(std::deque<std::string>* tokens) : tokens(tokens) {
-            this->next_token();
-        }
+        parser(std::deque<std::string>* tokens);
 
-        std::string peek_token() {
-            if (this->tokens->size() == 0) {
-                return "";
-            }
+        bool is_operand(const std::string& str);
 
-            return this->tokens->front();
-        }
+        void next_token();
 
-        bool is_operand() {
-            for (int i = 'A'; i <= 'Z'; i++) {
-                if (current_token == std::string(1, i)) {
-                    return true;
-                }
-            }
+        void expect(const std::string& str);
 
-            return false;
-        }
+        task::ITree* parse_expr();
 
-        bool is_operator() {
-            return current_token == "NOT" || current_token == "AND" || current_token == "OR";
-        }
+        task::ITree* parse_term();
 
-        void next_token() {
-            if (tokens->size() == 0) {
-                this->current_token = "";
-                return;
-            }
-            
-            this->current_token = this->tokens->front();
-            this->tokens->pop_front();
-        }
-
-        void expect(const std::string& str) {
-            this->next_token();
-
-            if (this->current_token != str) {
-                throw std::runtime_error("'" + str + "'" + " expected");
-            }
-        }
-
-        task::ITree* parse_expr() {
-            task::ITree* node = parse_term();
-
-            while (current_token == "OR") {
-                next_token();
-
-                task::ITree* right = parse_term();
-
-                task::ITree* new_node = new task::operator_tree("OR", false);
-
-                new_node->left = node;
-                new_node->right = right;
-
-                node = new_node;
-            }
-
-            return node;
-        }
-
-        task::ITree* parse_term() {
-            task::ITree* node = parse_factor();
-
-            while (current_token == "AND") {
-                next_token();
-
-                task::ITree* right = parse_factor();
-
-                task::ITree* new_node = new task::operator_tree("AND", false);
-
-                new_node->left = node;
-                new_node->right = right;
-
-                node = new_node;
-            }
-
-            return node;
-        }
-
-        task::ITree* parse_factor() {
-            task::ITree* node = nullptr;
-
-            if (current_token == "NOT") {
-                this->next_token();
-
-                task::ITree* left = this->parse_factor();
-
-                node = new task::operator_tree("NOT", true);
-
-                node->left = new task::operand_tree(this->current_token);
-                node->left = left;
-
-                return node;
-            }
-            else if (current_token == "(") {
-                this->next_token();
-
-                node = parse_expr();
-
-                expect(")");
-
-                return node;
-            }
-
-            std::string operand = this->current_token;
-            this->values[operand] = 1;
-            next_token();
-
-            return new task::operand_tree(operand);
-        }
+        task::ITree* parse_factor();
 
     };
 
 }
+
+#endif

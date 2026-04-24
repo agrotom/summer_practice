@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <stdexcept>
 
 #include "./include/lib/parser.hpp"
-
 #include "./include/lib/tree.hpp"
 
 #define WORD_COUNT 3
@@ -80,6 +80,35 @@ std::deque<std::string>* break_to_lex(const std::string& str) {
     return lexems;
 }
 
+void print_table(task::ITree* tree, const std::vector<std::string>& vars, std::map<std::string, int>& cur_values, int depth) {
+    if (depth == 0) {
+        for (int i = 0; i < vars.size(); i++) {
+            std::cout << cur_values.at(vars.at(i)) << " ";
+        }
+
+        std::cout << tree->calculate(cur_values) << std::endl;
+
+        return;
+    }
+
+    for (int i = 0; i <= 1; i++) {
+        cur_values.at(vars.at(vars.size() - depth)) = i;
+        print_table(tree, vars, cur_values, depth - 1);
+    }
+    
+}
+
+void delete_tree(task::ITree* tree) {
+    if (tree == nullptr) {
+        return;
+    }
+
+    delete_tree(tree->left);
+    delete_tree(tree->right);
+
+    delete tree;
+}
+
 int main(int argc, char** argv) {
     std::string input_string = "";
 
@@ -89,19 +118,37 @@ int main(int argc, char** argv) {
 
     task::parser parser_obj(lexems);
 
-    task::ITree* tree = parser_obj.parse_expr();
+    task::ITree* tree = nullptr;
 
-    parser_obj
+    try {
+        tree = parser_obj.parse_expr();
+    } catch (const std::runtime_error& e) {
+        return 1;
+    }
 
+    if (parser_obj.current_token != "") {
+        return 1;
+    }
+ 
+    std::vector<std::string> vars = *new std::vector<std::string>();
     std::map<std::string, int> values = *new std::map<std::string, int>();
 
-    tree->print();
+    for (auto const& [key, value] : parser_obj.values) {
+        std::cout << key << " ";
+        vars.push_back(key);
+        values[key] = 0;
+    }
 
-    values["A"] = 1;
-    values["B"] = 1;
-    values["C"] = 0;
+    std::cout << "Result" << std::endl;
 
-    std::cout << tree->calculate(values) << std::endl;
+    try {
+        print_table(tree, vars, values, vars.size());
+    } catch (const std::runtime_error& e) {
+        return 1;
+    }
+
+    delete lexems;
+    delete_tree(tree);
     
     return 0;
 }
